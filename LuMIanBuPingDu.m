@@ -3,52 +3,53 @@ n = 0.011:0.01:2.83; % 从0.011到2.83，步长为0.01
 n0 = 0.1;
 Gq0 = 2.56e-4;
 u = 20; % m/s
+w0=10;
 
 % 初始化数组
 f = zeros(size(n));
+w = zeros(size(n));
 Gqf = zeros(size(n));
-Gq1f = zeros(size(n));
-Gq2f = zeros(size(n));
+PLB2 = zeros(size(n));
+H=zeros(size(n));
+Gz=zeros(size(n));
 
 % 循环计算每个n对应的f, Gqf, Gq1f和Gq2f
 for i = 1:length(n)
     f(i) = u * n(i);
-    if f(i) ~= 0
-        ff = f(i) * f(i);
-        Gqf(i) = Gq0 * n0 * n0 * u * (1 / ff);
-        Gq1f(i) = 4 * pi * pi * Gq0 * n0 * n0 * f(i);
-        Gq2f(i) = 16 * pi * pi * pi * Gq0 * n0 * n0 * u * ff;
-    else
-        error('f cannot be zero at n = %f', n(i));
-    end
+    w(i) = 2*pi*f(i);
+    PLB2(i) =(w(i)/w0)^2;
+    ff = f(i) * f(i);
+    Gqf(i) = Gq0 * n0 * n0 * u * (1 / ff);
+    H(i)=w(i)*w(i)*sqrt((1+PLB2(i))/((1-PLB2(i))*(1-PLB2(i))+PLB2(i)));
+    Gz(i)=H(i)*H(i)*Gqf(i);
 end
 
 % 计算对数
 Logf = log10(f);
 logGqf = log10(Gqf);
-logGq1f = log10(Gq1f);
-logGq2f = log10(Gq2f);
+logH = log10(H);
+logGz = log10(Gz);
 
 % 绘制Gqf的图像
-figure1 = figure; % 创建第一个图形窗口
+figure; % 创建第一个图形窗口
 plot(Logf, logGqf); % 绘制Logf和logGqf的图像
 title('LogGqf-Logf');
 xlabel('Logf');
 ylabel('logGqf');
 grid on; % 显示网格
 
-% 绘制Gq1f的图像
-figure2 = figure; % 创建第二个图形窗口
-plot(Logf, logGq1f); % 绘制Logf和logGq1f的图像
-title('LogGq1f_Logf');
+% 绘制Gqf的图像
+figure; % 创建第一个图形窗口
+plot(Logf, H); % 绘制Logf和logH的图像
+title('LogH-Logf');
 xlabel('Logf');
-ylabel('logGq1f');
+ylabel('logH');
 grid on; % 显示网格
 
-% 绘制Gq2f的图像
-figure3 = figure; % 创建第三个图形窗口
-plot(Logf, logGq2f); % 绘制Logf和logGq2f的图像
-title('LogGq2f_Logf');
+% 绘制Gqf的图像
+figure ; % 创建第一个图形窗口
+plot(Logf, logGz); % 绘制Logf和logGz的图像
+title('LogGz-Logf');
 xlabel('Logf');
-ylabel('logGq2f');
+ylabel('logGz');
 grid on; % 显示网格
