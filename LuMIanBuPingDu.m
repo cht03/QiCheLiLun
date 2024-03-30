@@ -9,6 +9,7 @@ w0=10;
 f = zeros(size(n));
 w = zeros(size(n));
 Gqf = zeros(size(n));
+PLB = zeros(size(n));
 PLB2 = zeros(size(n));
 H=zeros(size(n));
 Gz=zeros(size(n));
@@ -17,6 +18,7 @@ Gz=zeros(size(n));
 for i = 1:length(n)
     f(i) = u * n(i);
     w(i) = 2*pi*f(i);
+    PLB(i)=w(i)/w0;
     PLB2(i) =(w(i)/w0)^2;
     ff = f(i) * f(i);
     Gqf(i) = Gq0 * n0 * n0 * u * (1 / ff);
@@ -25,31 +27,33 @@ for i = 1:length(n)
 end
 
 % 计算对数
-Logf = log10(f);
+logf = log10(f);
+logw=log10(w);
 logGqf = log10(Gqf);
 logH = log10(H);
 logGz = log10(Gz);
+logPLB=log10(PLB);
 
 % 绘制Gqf的图像
 figure; % 创建第一个图形窗口
-plot(Logf, logGqf); % 绘制Logf和logGqf的图像
-title('LogGqf-Logf');
-xlabel('Logf');
+plot(logw, logGqf); % 绘制Logw和logGqf的图像
+title('LogGqf-Logw');
+xlabel('Logw');
 ylabel('logGqf');
 grid on; % 显示网格
 
 % 绘制Gqf的图像
 figure; % 创建第一个图形窗口
-plot(Logf, H); % 绘制Logf和logH的图像
-title('LogH-Logf');
-xlabel('Logf');
+plot(logPLB,logH); % 绘制Logw和logPLB的图像
+title('LogH-LogPLB');
+xlabel('LogPLB');
 ylabel('logH');
 grid on; % 显示网格
 
 % 绘制Gqf的图像
 figure ; % 创建第一个图形窗口
-plot(Logf, logGz); % 绘制Logf和logGz的图像
-title('LogGz-Logf');
-xlabel('Logf');
+plot(logPLB, logGz); % 绘制LogPLB和logGz的图像
+title('LogGz-LogPLB');
+xlabel('LogPLB');
 ylabel('logGz');
 grid on; % 显示网格
