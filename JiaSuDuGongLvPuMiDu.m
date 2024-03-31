@@ -25,6 +25,14 @@ for i = 1:length(n)
     H(i)=w(i)*w(i)*sqrt((1+PLB2(i))/((1-PLB2(i))*(1-PLB2(i))+PLB2(i)));
     Gz(i)=H(i)*H(i)*Gqf(i);
 end
+% 定义Gz2作为n的函数
+Gz2_fun = @(n) H(n)*H(n)*Gqf(n);
+
+% 对Gz2进行积分
+integral_Gz2 = integral(Gz2_fun, min(n), max(n));
+
+% 显示积分结果
+disp(['积分结果为: ' num2str(integral_Gz2)]);
 
 % 计算对数
 logf = log10(f);
