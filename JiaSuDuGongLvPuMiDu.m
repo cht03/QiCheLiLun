@@ -1,5 +1,5 @@
 % 定义n的取值范围
-n = 0.011:0.01:2.83; % 从0.011到2.83，步长为0.01
+n = 0.011:0.00001:2.83; % 从0.011到2.83，步长为0.01
 n0 = 0.1;
 Gq0 = 2.56e-4;
 u = 20; % m/s
@@ -26,24 +26,41 @@ for i = 1:length(n)
     Gz(i) = H(i) * H(i) * Gqf(i);
 end
 
-% 定义Gz2作为n的函数的函数句柄
-Gz2_fun = @(n) H(n) * H(n) * Gqf(n);
+x=w;
+y=Gz;
 
-% 计算积分
-integral_Gz2 = 0;
-for i = 1:length(n)
-    integral_Gz2 = integral_Gz2 + Gz2_fun(n(i));
+% 选择拟合类型，使用三次多项式模型
+ft = fittype('a*x^2 + b*x + c');
+
+% 进行曲线拟合
+[c, gof] = fit(x', y', ft);
+
+% 提取拟合参数
+a = c(1);
+b = c(2);
+c = c(3);
+
+% 创建模型函数时，使用按元素求幂
+model_func = @(x) a.*x.^2 + b.*x + c;
+
+% 定义积分区间的上下限
+x_min = 0.1; % x的最小值
+x_max = 10;  % x的最大值
+
+% 使用模型函数进行积分
+try
+    integral_result = integral(model_func, x_min, x_max);
+    disp(['积分结果为: ' num2str(integral_result)]);
+catch exception
+    disp('积分过程中出现问题：', exception.message);
 end
-
-% 显示积分结果
-disp(['积分结果为: ' num2str(integral_Gz2)]);
 
 % 计算对数
 logf = log10(f);
 logw=log10(w);
 logGqf = log10(Gqf);
 logH = log10(H);
-logGz = log10(Gz2);
+logGz = log10(Gz);
 logPLB=log10(PLB);
 
 % 绘制Gqf的图像
